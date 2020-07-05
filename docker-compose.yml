@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  banco-posgress:
+    image: kartoza/postgis:9.4-2.1
+    container_name: postges
+    volumes:
+      - ./pg/postgres_data:/var/lib/postgresql
+      - ./pg/setup_data:/home/setup
+    environment:
+      - USERNAME=${POSTGRESS_USERNAME}
+      - PASS=${POSTGRESS_PASSWORD}
+    restart: always
+
+  api:
+    build: .
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/node/api
