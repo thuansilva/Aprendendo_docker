@@ -1,21 +1,35 @@
-version: "3"
+version: "3.8"
+
+# networks: 
+#   my-network:
+#     driver: bridge
 
 services:
-  banco-posgress:
-    image: kartoza/postgis:9.4-2.1
-    container_name: postges
-    volumes:
-      - ./pg/postgres_data:/var/lib/postgresql
-      - ./pg/setup_data:/home/setup
-    environment:
-      - USERNAME=${POSTGRESS_USERNAME}
-      - PASS=${POSTGRESS_PASSWORD}
-    restart: always
-
+  db:
+    image: kartoza/postgis:11.0-2.5
+    container_name: db_pet
+    # networks:
+    #   - my-network
+    ports:
+      - 5432:5432
+    environment: 
+      POSTGRES_DBNAME: ${POSTGRESS_DATABASE}
+      POSTGRES_USER: ${POSTGRESS_USERNAME}
+      POSTGRES_PASS: ${POSTGRESS_PASSWORD}
+    #   - POSTGRES_MULTIPLE_EXTENSIONS= postgis
+    # # - DISTRO=ubuntu
+    
   api:
     build: .
     command: npm run dev
+    container_name: api_pet
     ports:
-      - "3000:3000"
+      - 3000:3000
     volumes:
       - .:/home/node/api
+    # networks:
+    #   - my-network
+    restart: always
+    depends_on: 
+      - db
+
